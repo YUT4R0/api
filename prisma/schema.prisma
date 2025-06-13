@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  surname   String?
+  password  String
+  email     String   @unique
+  isManager Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Sector {
+  id           String        @id @default(uuid())
+  name         String        @unique
+  amountTrays  Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  workstations Workstation[]
+
+  @@map("sectors")
+}
+
+model Workstation {
+  id        String   @id @default(uuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  sectorId  String
+  sector    Sector   @relation(fields: [sectorId], references: [id])
+
+  @@map("workstations")
+}

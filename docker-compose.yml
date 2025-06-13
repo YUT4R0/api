@@ -1,0 +1,13 @@
+services:
+  srp-db:
+    container_name: srp-db
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: srp_user
+      POSTGRES_PASSWORD: srp_password
+      POSTGRES_DB: srp_db
+      PGDATA: /data/postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/pg:/data/postgres
