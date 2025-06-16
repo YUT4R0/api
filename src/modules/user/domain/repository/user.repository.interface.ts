@@ -1,8 +1,9 @@
+import { UserEntity } from 'src/modules/user/domain/entity/user.entity';
+
 export interface IUserRepository {
-  findById(id: string): Promise<any>;
-  findByEmail(email: string): Promise<any>;
-  findByName(name: string): Promise<any>;
-  create(userData: any): Promise<any>;
-  update(id: string, userData: any): Promise<any>;
+  findById(id: string): UserEntity;
+  create(user: UserEntity): Promise<any>;
+  update(id: string, user: any): Promise<any>;
   delete(id: string): Promise<void>;
+  findByEmail(email: string): Promise<UserEntity | null>;
 }
