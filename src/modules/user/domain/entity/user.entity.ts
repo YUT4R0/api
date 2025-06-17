@@ -1,8 +1,6 @@
-import bcrypt from 'bcryptjs';
 import { Entity } from 'src/shared/domain/entity';
 import { ValueObject } from 'src/shared/domain/value-object';
 import { UUIDValueObject } from 'src/shared/domain/value-object/uuid.vo';
-import { CreateUserInput } from '../../application/usecases/create-user/input';
 
 type UserEntityProps = {
   id: UUIDValueObject;
@@ -14,8 +12,6 @@ type UserEntityProps = {
   createdAt: Date;
   updatedAt: Date;
 };
-
-export class UserUUID extends UUIDValueObject {}
 
 export class UserEntity extends Entity {
   public readonly id: UUIDValueObject;
@@ -39,13 +35,11 @@ export class UserEntity extends Entity {
     this.updatedAt = props.updatedAt;
   }
 
-  static async create(props: CreateUserInput): Promise<UserEntity> {
+  static create(props: UserEntityProps): UserEntity {
     return new UserEntity({
       ...props,
-      id: new UserUUID(),
-      password: await bcrypt.hash(props.password, 10),
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: props.createdAt ?? new Date(),
+      updatedAt: props.updatedAt ?? new Date(),
     });
   }
 
