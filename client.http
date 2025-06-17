@@ -1,0 +1,40 @@
+@baseUrl = http://localhost:3333
+
+# @name create_account
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+  "name": "rick",
+  "email": "rick@gmail.com",
+  "password": "ricknottheeditor12345",
+  "isManager": true
+}
+
+###
+
+# @name list_users
+GET {{baseUrl}}/users
+Content-Type: application/json
+
+###
+
+# @name get_user_by_id
+GET {{baseUrl}}/users/482c713e-3ac0-4eb2-bf67-2542ed3958ff
+Content-Type: application/json
+
+###
+
+# @name delete_user_by_id
+DELETE {{baseUrl}}/users/4208c7d8-195c-4543-ba3d-6243bbd1f5a4
+Content-Type: application/json
+
+###
+
+# @name update_user_by_id
+PATCH {{baseUrl}}/users/4208c7d8-195c-4543-ba3d-6243bbd1f5a4
+Content-Type: application/json
+
+{
+  "surname": "nakamura"
+}

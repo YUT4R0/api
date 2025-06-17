@@ -6,26 +6,33 @@ export class UserMapper {
   static toDomain(user: PrismaUser): UserEntity {
     return new UserEntity({
       id: new UUIDValueObject(user.id),
-      name: user.name,
-      surname: user.surname ?? undefined,
-      email: user.email,
-      password: user.password,
-      isManager: user.isManager,
+      data: {
+        name: user.name,
+        surname: user.surname ?? undefined,
+        email: user.email,
+        password: user.password,
+        isManager: user.isManager,
+      },
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
     });
   }
 
-  static toModel(user: UserEntity): PrismaUser {
+  static toModel({
+    entityId,
+    userData,
+    getCreatedAt,
+    getUpdatedAt,
+  }: UserEntity): PrismaUser {
     return {
-      id: user.id.toString,
-      name: user.name,
-      surname: user.surname || null,
-      email: user.email,
-      password: user.password,
-      isManager: user.isManager,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      id: entityId.toString,
+      name: userData.name,
+      surname: userData.surname ?? null,
+      email: userData.email,
+      password: userData.password,
+      isManager: userData.isManager,
+      createdAt: getCreatedAt,
+      updatedAt: getUpdatedAt,
     };
   }
 }

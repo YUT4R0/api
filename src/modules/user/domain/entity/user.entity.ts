@@ -1,49 +1,63 @@
 import { Entity } from 'src/shared/domain/entity';
-import { ValueObject } from 'src/shared/domain/value-object';
 import { UUIDValueObject } from 'src/shared/domain/value-object/uuid.vo';
 
-type UserEntityProps = {
-  id: UUIDValueObject;
+type UserEntityData = {
   name: string;
   surname?: string;
   email: string;
   password: string;
   isManager: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
+type UserEntityProps = {
+  id: UUIDValueObject;
+  data: UserEntityData;
+  createdAt: Date;
+  updatedAt?: Date;
+};
+
+export type UserEntityMutableData = Partial<UserEntityData>;
+
 export class UserEntity extends Entity {
-  public readonly id: UUIDValueObject;
-  public name: string;
-  public surname?: string;
-  public email: string;
-  public password: string;
-  public isManager: boolean;
-  public createdAt: Date;
-  public updatedAt: Date;
+  private readonly id: UUIDValueObject;
+  private data: UserEntityData;
+  private createdAt: Date;
+  private updatedAt?: Date;
 
   constructor(props: UserEntityProps) {
     super();
     this.id = props.id;
-    this.name = props.name;
-    this.surname = props.surname;
-    this.email = props.email;
-    this.password = props.password;
-    this.isManager = props.isManager;
+    this.data = props.data;
     this.createdAt = props.createdAt;
     this.updatedAt = props.updatedAt;
   }
 
   static create(props: UserEntityProps): UserEntity {
-    return new UserEntity({
-      ...props,
-      createdAt: props.createdAt ?? new Date(),
-      updatedAt: props.updatedAt ?? new Date(),
-    });
+    return new UserEntity(props);
   }
 
-  get entityId(): ValueObject {
+  public update(newData: UserEntityMutableData, updatedAt: Date) {
+    if (newData.name) this.data.name = newData.name;
+    if (newData.surname) this.data.surname = newData.surname;
+    if (newData.email) this.data.email = newData.email;
+    if (newData.password) this.data.password = newData.password;
+    if (newData.isManager) this.data.isManager = newData.isManager;
+    this.updatedAt = updatedAt;
+  }
+
+  get entityId(): UUIDValueObject {
     return this.id;
+  }
+
+  get userData(): UserEntityData {
+    return this.data;
+  }
+
+  get getCreatedAt(): Date {
+    return this.createdAt;
+  }
+
+  get getUpdatedAt(): Date {
+    return this.updatedAt ?? new Date();
   }
 }

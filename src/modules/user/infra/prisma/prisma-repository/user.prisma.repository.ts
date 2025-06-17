@@ -9,8 +9,19 @@ import { UserMapper } from '../mapper/user.mapper';
 export class UserRepository implements IUserRepository {
   constructor(private readonly prismaService: PrismaService) {}
 
-  findById(id: UUIDValueObject): Promise<UserEntity> {
-    throw new Error('Method not implemented.');
+  async findById(id: UUIDValueObject): Promise<UserEntity | null> {
+    try {
+      const user = await this.prismaService.user.findUnique({
+        where: {
+          id: id.toString,
+        },
+      });
+
+      if (!user) return null;
+      return UserMapper.toDomain(user);
+    } catch (error) {
+      throw new Error(`Error occurrend when fetching user by id: ${error}`);
+    }
   }
 
   async findAll(): Promise<UserEntity[] | []> {
@@ -27,13 +38,15 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  async create(user: UserEntity): Promise<UserEntity> {
+  async save(user: UserEntity): Promise<UserEntity> {
+    const userModel = UserMapper.toModel(user);
     try {
-      const existingUser = await this.findByEmail(user.email);
-      if (existingUser !== null) throw new Error('User already exists');
-
-      const createdUser = await this.prismaService.user.create({
-        data: UserMapper.toModel(user),
+      const createdUser = await this.prismaService.user.upsert({
+        where: {
+          id: userModel.id,
+        },
+        create: userModel,
+        update: userModel,
       });
 
       return UserMapper.toDomain(createdUser);
@@ -42,12 +55,18 @@ export class UserRepository implements IUserRepository {
     }
   }
 
-  update(id: UUIDValueObject, userData: any): Promise<any> {
-    throw new Error('Method not implemented.');
+  async delete(user: UserEntity): Promise<void> {
+    try {
+      await this.prismaService.user.delete({
+        where: {
+          id: UserMapper.toModel(user).id,
+        },
+      });
+    } catch (error) {
+      throw new Error(`Error occurrend when deleting user: ${error}`);
+    }
   }
-  delete(id: UUIDValueObject): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
+
   async findByEmail(email: string): Promise<UserEntity | null> {
     try {
       const user = await this.prismaService.user.findUnique({

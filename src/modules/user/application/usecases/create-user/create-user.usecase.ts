@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ConflictException, Inject, Injectable } from '@nestjs/common';
 import { UserEntity } from 'src/modules/user/domain/entity/user.entity';
 import { PasswordValueObject } from 'src/modules/user/domain/value-object/password.vo';
 import { UserRepository } from 'src/modules/user/infra/prisma/prisma-repository/user.prisma.repository';
@@ -14,17 +14,22 @@ export class CreateUserUsecase {
   ) {}
 
   async handle(input: CreateUserInput): Promise<UserOutput> {
+    const existingUser = await this.userRepository.findByEmail(input.email);
+    if (existingUser) throw new ConflictException('User alreadt exists!');
+
     const id = new UUIDValueObject();
     const hashedPassword = await PasswordValueObject.create(input.password, 10);
 
     const user = UserEntity.create({
-      ...input,
       id,
-      password: hashedPassword.value,
+      data: {
+        ...input,
+        password: hashedPassword.value,
+      },
       createdAt: new Date(),
-      updatedAt: new Date(),
     });
-    const createdUser = await this.userRepository.create(user);
+
+    const createdUser = await this.userRepository.save(user);
     return UserOutputMapper.toOutput(createdUser);
   }
 }

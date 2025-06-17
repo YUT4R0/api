@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { validateSync } from 'class-validator';
+import {
+  IsBoolean,
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  validateSync,
+} from 'class-validator';
 
 export type CreateUserConstructorProps = {
   name: string;
@@ -10,14 +16,26 @@ export type CreateUserConstructorProps = {
 };
 
 export class CreateUserInput {
+  @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   name: string;
+
   @ApiProperty()
   surname?: string;
+
+  @IsEmail()
+  @IsNotEmpty()
   @ApiProperty()
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
   @ApiProperty()
   password: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
   @ApiProperty()
   isManager: boolean;
 

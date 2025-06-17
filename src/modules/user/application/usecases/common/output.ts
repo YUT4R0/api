@@ -7,13 +7,16 @@ export type UserOutput = {
   email: string;
   isManager: boolean;
   createdAt: Date;
+  updatedAt: Date;
 };
 
 export class UserOutputMapper {
   static toOutput(user: UserEntity): UserOutput {
     return {
-      ...user,
-      id: user.id.toString,
+      id: user.entityId.toString,
+      ...user.userData,
+      createdAt: user.getCreatedAt,
+      updatedAt: user.getUpdatedAt,
     };
   }
 }
